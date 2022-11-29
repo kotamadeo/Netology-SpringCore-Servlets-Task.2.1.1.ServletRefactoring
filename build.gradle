@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'war'
+}
+
+group 'com.gmail.at.kotamadeo'
+version '1.0-SNAPSHOT'
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
+    implementation 'com.google.code.gson:gson:2.10'
+    compileOnly 'com.github.jsimone:webapp-runner:9.0.27.1'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+}
+
+task stage() {
+    dependsOn clean, war
+}
+war.mustRunAfter clean
+
+task copyToLib(type: Copy) {
+    into "$buildDir/server"
+    from(configurations.compileClasspath) {
+        include "webapp-runner*"
+    }
+}
+
+stage.dependsOn(copyToLib)
+
+test {
+    useJUnitPlatform()
+}
+
+wrapper {
+    gradleVersion'7.6'
+}
