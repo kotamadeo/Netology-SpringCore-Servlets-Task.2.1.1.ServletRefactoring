@@ -8,7 +8,6 @@ import com.gmail.at.kotamadeo.service.PostService;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.Serial;
 
 import static com.gmail.at.kotamadeo.servlet.MainServlet.Method.*;
 import static java.lang.Long.parseLong;
@@ -16,8 +15,6 @@ import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
 public class MainServlet extends HttpServlet {
-    @Serial
-    private static final long serialVersionUID = -3565315902137616898L;
     private PostController controller;
 
     @Override

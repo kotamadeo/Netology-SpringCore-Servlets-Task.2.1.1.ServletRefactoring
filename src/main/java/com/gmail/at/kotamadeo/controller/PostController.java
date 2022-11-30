@@ -10,17 +10,24 @@ import java.io.IOException;
 import java.io.Reader;
 
 import static javax.servlet.http.HttpServletResponse.*;
+
 @RequiredArgsConstructor
 public class PostController {
     private static final String APPLICATION_JSON = "application/json";
-    private final PostService service;
     private static final Gson GSON = new Gson();
+    private final PostService service;
 
-    public void all(HttpServletResponse response) throws IOException {
-        response.setContentType(APPLICATION_JSON);
-        response.setStatus(SC_OK);
+
+    public void all(HttpServletResponse response) {
         final var data = service.all();
-        response.getWriter().print(GSON.toJson(data));
+        try (var writer = response.getWriter()) {
+            response.setContentType(APPLICATION_JSON);
+            response.setStatus(SC_OK);
+            writer.print(GSON.toJson(data));
+        } catch (IOException e) {
+            e.printStackTrace();
+            response.setStatus(SC_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public void getById(long id, HttpServletResponse response) {
@@ -39,7 +46,7 @@ public class PostController {
         }
     }
 
-    public void save(Reader body, HttpServletResponse response) throws IOException {
+    public void save(Reader body, HttpServletResponse response) {
         response.setContentType(APPLICATION_JSON);
         final var post = GSON.fromJson(body, Post.class);
         final var data = service.save(post);
@@ -48,7 +55,12 @@ public class PostController {
         } else {
             response.setStatus(SC_OK);
         }
-        response.getWriter().print(GSON.toJson(data));
+        try (var writer = response.getWriter()) {
+            writer.print(GSON.toJson(data));
+        } catch (IOException e) {
+            e.printStackTrace();
+            response.setStatus(SC_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public void removeById(long id, HttpServletResponse response) {

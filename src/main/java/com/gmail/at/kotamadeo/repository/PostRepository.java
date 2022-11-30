@@ -15,7 +15,7 @@ import static java.util.Optional.of;
 // Stub
 @NoArgsConstructor
 public class PostRepository {
-    private static final AtomicLong postCounter = new AtomicLong(0);
+    private static final AtomicLong POST_COUNTER = new AtomicLong(0);
     private static final Map<Long, Post> REPOSITORY = new ConcurrentHashMap<>();
 
     public List<Post> all() {
@@ -24,7 +24,7 @@ public class PostRepository {
 
     public Optional<Post> getById(long id) {
         Optional<Post> maybePost = Optional.empty();
-        if (id < 1 || id > postCounter.get()) {
+        if (id < 1 || id > POST_COUNTER.get()) {
             return maybePost;
         }
         if (REPOSITORY.containsKey(id)) {
@@ -35,11 +35,11 @@ public class PostRepository {
 
     public Post save(Post post) {
         long id = post.getId();
-        if (id < 0 || id > postCounter.get()) {
+        if (id < 0 || id > POST_COUNTER.get()) {
             throw new IllegalArgumentException();
         }
         if (id == 0) {
-            id = postCounter.addAndGet(1);
+            id = POST_COUNTER.addAndGet(1);
             post.setId(id);
             REPOSITORY.put(id, post);
             System.out.println(REPOSITORY);
@@ -50,7 +50,7 @@ public class PostRepository {
     }
 
     public void removeById(long id) {
-        if (id <= 0 || id > postCounter.get() || !REPOSITORY.containsKey(id)) {
+        if (id <= 0 || id > POST_COUNTER.get() || !REPOSITORY.containsKey(id)) {
             return;
         }
         REPOSITORY.remove(id);

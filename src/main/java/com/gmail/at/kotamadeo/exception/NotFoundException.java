@@ -2,13 +2,8 @@ package com.gmail.at.kotamadeo.exception;
 
 import lombok.NoArgsConstructor;
 
-import java.io.Serial;
-
 @NoArgsConstructor
 public class NotFoundException extends RuntimeException {
-
-    @Serial
-    private static final long serialVersionUID = -7585013941600899246L;
 
     public NotFoundException(String message) {
         super(message);
