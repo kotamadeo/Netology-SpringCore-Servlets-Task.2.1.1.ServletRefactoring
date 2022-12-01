@@ -5,6 +5,7 @@ import com.gmail.at.kotamadeo.service.PostService;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -15,6 +16,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = PRIVATE)
+@Component
 public class PostController {
     static final String APPLICATION_JSON = "application/json";
     static final Gson GSON = new Gson();

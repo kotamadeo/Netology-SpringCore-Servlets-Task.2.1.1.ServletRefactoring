@@ -3,6 +3,8 @@ package com.gmail.at.kotamadeo.repository;
 import com.gmail.at.kotamadeo.model.Post;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ import static lombok.AccessLevel.PRIVATE;
 // Stub
 @NoArgsConstructor
 @FieldDefaults(level = PRIVATE)
+@Repository
 public class PostRepository {
     static final AtomicLong POST_COUNTER = new AtomicLong(0);
     static final Map<Long, Post> REPOSITORY = new ConcurrentHashMap<>();

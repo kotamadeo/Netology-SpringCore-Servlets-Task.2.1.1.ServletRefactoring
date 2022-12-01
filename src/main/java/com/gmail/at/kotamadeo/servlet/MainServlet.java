@@ -2,9 +2,14 @@ package com.gmail.at.kotamadeo.servlet;
 
 import com.gmail.at.kotamadeo.controller.PostController;
 import com.gmail.at.kotamadeo.exception.NotFoundException;
-import com.gmail.at.kotamadeo.repository.PostRepository;
-import com.gmail.at.kotamadeo.service.PostService;
+import com.gmail.at.kotamadeo.model.Post;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,14 +22,17 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static lombok.AccessLevel.PRIVATE;
 
 @FieldDefaults(level = PRIVATE)
+@Configuration
+@ComponentScan("com.gmail.at.kotamadeo")
+@RequiredArgsConstructor
 public class MainServlet extends HttpServlet {
     PostController controller;
 
     @Override
     public void init() {
-        final var repository = new PostRepository();
-        final var service = new PostService(repository);
-        controller = new PostController(service);
+        try (var context = new AnnotationConfigApplicationContext(MainServlet.class)) {
+            controller = context.getBean(PostController.class);
+        }
     }
 
     @Override
