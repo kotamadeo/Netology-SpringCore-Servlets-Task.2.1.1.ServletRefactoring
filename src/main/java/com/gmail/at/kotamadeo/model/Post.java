@@ -1,18 +1,22 @@
 package com.gmail.at.kotamadeo.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.io.Serial;
 import java.io.Serializable;
 
-@Data
+import static lombok.AccessLevel.PRIVATE;
+
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = PRIVATE)
 public class Post implements Serializable {
     @Serial
-    private static final long serialVersionUID = 1503915132623986593L;
-    private long id;
-    private String content;
+    static final long serialVersionUID = 1503915132623986593L;
+    long id;
+    String content;
 }

@@ -4,18 +4,21 @@ import com.gmail.at.kotamadeo.model.Post;
 import com.gmail.at.kotamadeo.service.PostService;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Reader;
 
 import static javax.servlet.http.HttpServletResponse.*;
+import static lombok.AccessLevel.PRIVATE;
 
 @RequiredArgsConstructor
+@FieldDefaults(level = PRIVATE)
 public class PostController {
-    private static final String APPLICATION_JSON = "application/json";
-    private static final Gson GSON = new Gson();
-    private final PostService service;
+    static final String APPLICATION_JSON = "application/json";
+    static final Gson GSON = new Gson();
+    final PostService service;
 
 
     public void all(HttpServletResponse response) {

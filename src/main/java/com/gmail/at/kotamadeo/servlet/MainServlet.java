@@ -4,6 +4,7 @@ import com.gmail.at.kotamadeo.controller.PostController;
 import com.gmail.at.kotamadeo.exception.NotFoundException;
 import com.gmail.at.kotamadeo.repository.PostRepository;
 import com.gmail.at.kotamadeo.service.PostService;
+import lombok.experimental.FieldDefaults;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -13,9 +14,11 @@ import static com.gmail.at.kotamadeo.servlet.MainServlet.Method.*;
 import static java.lang.Long.parseLong;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+import static lombok.AccessLevel.PRIVATE;
 
+@FieldDefaults(level = PRIVATE)
 public class MainServlet extends HttpServlet {
-    private PostController controller;
+    PostController controller;
 
     @Override
     public void init() {

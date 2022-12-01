@@ -2,6 +2,7 @@ package com.gmail.at.kotamadeo.repository;
 
 import com.gmail.at.kotamadeo.model.Post;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +12,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.util.Optional.of;
+import static lombok.AccessLevel.PRIVATE;
 
 // Stub
 @NoArgsConstructor
+@FieldDefaults(level = PRIVATE)
 public class PostRepository {
-    private static final AtomicLong POST_COUNTER = new AtomicLong(0);
-    private static final Map<Long, Post> REPOSITORY = new ConcurrentHashMap<>();
+    static final AtomicLong POST_COUNTER = new AtomicLong(0);
+    static final Map<Long, Post> REPOSITORY = new ConcurrentHashMap<>();
 
     public List<Post> all() {
         return new ArrayList<>(REPOSITORY.values());
