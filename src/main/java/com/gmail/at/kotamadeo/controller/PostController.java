@@ -1,73 +1,69 @@
 package com.gmail.at.kotamadeo.controller;
 
+import com.gmail.at.kotamadeo.dto.PostDto;
+import com.gmail.at.kotamadeo.exception.NotFoundException;
+import com.gmail.at.kotamadeo.mapper.PostMapper;
 import com.gmail.at.kotamadeo.model.Post;
 import com.gmail.at.kotamadeo.service.PostService;
-import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.Reader;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import static javax.servlet.http.HttpServletResponse.*;
-import static lombok.AccessLevel.PRIVATE;
+import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
-@FieldDefaults(level = PRIVATE)
+@RestController
+@RequestMapping("/api/posts")
 public class PostController {
-    static final String APPLICATION_JSON = "application/json";
-    static final Gson GSON = new Gson();
-    final PostService service;
+    private final PostService service;
 
-
-    public void all(HttpServletResponse response) {
-        final var data = service.all();
-        try (var writer = response.getWriter()) {
-            response.setContentType(APPLICATION_JSON);
-            response.setStatus(SC_OK);
-            writer.print(GSON.toJson(data));
-        } catch (IOException e) {
-            e.printStackTrace();
-            response.setStatus(SC_INTERNAL_SERVER_ERROR);
-        }
+    @GetMapping
+    public ResponseEntity<List<PostDto>> all() {
+        List<PostDto> posts = PostMapper.INSTANCE.convert(service.all());
+        return posts != null ?
+                new ResponseEntity<>(posts, FOUND) :
+                new ResponseEntity<>(NOT_FOUND);
     }
 
-    public void getById(long id, HttpServletResponse response) {
-        final var data = service.getById(id);
-        if (data == null) {
-            response.setStatus(SC_NOT_FOUND);
-        } else {
-            try (var writer = response.getWriter()) {
-                response.setContentType(APPLICATION_JSON);
-                response.setStatus(SC_OK);
-                writer.print(GSON.toJson(data));
-            } catch (IOException e) {
-                e.printStackTrace();
-                response.setStatus(SC_INTERNAL_SERVER_ERROR);
-            }
+    @GetMapping("/{id}")
+    public ResponseEntity<PostDto> getById(@PathVariable long id) {
+        PostDto post;
+        try {
+            post = PostMapper.INSTANCE.convert(service.getById(id));
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(NOT_FOUND);
         }
+        return new ResponseEntity<>(post, OK);
     }
 
-    public void save(Reader body, HttpServletResponse response) {
-        response.setContentType(APPLICATION_JSON);
-        final var post = GSON.fromJson(body, Post.class);
-        final var data = service.save(post);
-        if (data == null) {
-            response.setStatus(SC_BAD_REQUEST);
-        } else {
-            response.setStatus(SC_OK);
+    @PostMapping
+    public ResponseEntity<Void> save(@RequestBody Post post) {
+        try {
+            service.save(post);
+        } catch (Exception e) {
+            return new ResponseEntity<>(BAD_REQUEST);
         }
-        try (var writer = response.getWriter()) {
-            writer.print(GSON.toJson(data));
-        } catch (IOException e) {
-            e.printStackTrace();
-            response.setStatus(SC_INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(CREATED);
     }
 
-    public void removeById(long id, HttpServletResponse response) {
-        service.removeById(id);
-        response.setStatus(SC_OK);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> removeById(@PathVariable long id) {
+        try {
+            service.removeById(id);
+        } catch (Exception e) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+        return new ResponseEntity<>(OK);
+    }
+
+    private String getErrorsList(BindingResult bindingResult) {
+        return bindingResult.getFieldErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining("; "));
     }
 }

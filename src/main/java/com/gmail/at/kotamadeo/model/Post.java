@@ -13,10 +13,12 @@ import static lombok.AccessLevel.PRIVATE;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @FieldDefaults(level = PRIVATE)
 public class Post implements Serializable {
     @Serial
     static final long serialVersionUID = 1503915132623986593L;
     long id;
     String content;
+    boolean isRemoved;
 }

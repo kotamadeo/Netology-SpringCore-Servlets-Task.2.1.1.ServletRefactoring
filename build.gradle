@@ -9,33 +9,35 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    mapstructVersion = '1.5.3.Final'
+    springVersion = '5.3.24'
+}
+
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
-    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
     compileOnly 'com.github.jsimone:webapp-runner:9.0.27.1'
 
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
+    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.65'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:9.0.65'
+
+    implementation "org.springframework:spring-webmvc:${springVersion}"
+    implementation "org.springframework:spring-context-support:${springVersion}"
+
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
+
     implementation 'com.google.code.gson:gson:2.10'
 
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 }
-
-task stage() {
-    dependsOn clean, war
-}
-war.mustRunAfter clean
-
-task copyToLib(type: Copy) {
-    into "$buildDir/server"
-    from(configurations.compileClasspath) {
-        include "webapp-runner*"
-    }
-}
-
-stage.dependsOn(copyToLib)
 
 test {
     useJUnitPlatform()

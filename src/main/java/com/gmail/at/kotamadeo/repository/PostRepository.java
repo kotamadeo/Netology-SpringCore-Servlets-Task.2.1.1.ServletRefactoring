@@ -2,7 +2,7 @@ package com.gmail.at.kotamadeo.repository;
 
 import com.gmail.at.kotamadeo.model.Post;
 import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,17 +12,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.util.Optional.of;
-import static lombok.AccessLevel.PRIVATE;
 
 // Stub
 @NoArgsConstructor
-@FieldDefaults(level = PRIVATE)
+@Repository
 public class PostRepository {
-    static final AtomicLong POST_COUNTER = new AtomicLong(0);
-    static final Map<Long, Post> REPOSITORY = new ConcurrentHashMap<>();
+    private static final AtomicLong POST_COUNTER = new AtomicLong(0);
+    private static final Map<Long, Post> REPOSITORY = new ConcurrentHashMap<>();
 
     public List<Post> all() {
-        return new ArrayList<>(REPOSITORY.values());
+        return REPOSITORY.values().stream()
+                .filter(p -> !p.isRemoved())
+                .toList();
     }
 
     public Optional<Post> getById(long id) {
@@ -31,7 +32,7 @@ public class PostRepository {
             return maybePost;
         }
         if (REPOSITORY.containsKey(id)) {
-            maybePost = of(REPOSITORY.get(id));
+            maybePost = of(REPOSITORY.get(id)).filter(p -> !p.isRemoved());
         }
         return maybePost;
     }
@@ -45,7 +46,6 @@ public class PostRepository {
             id = POST_COUNTER.addAndGet(1);
             post.setId(id);
             REPOSITORY.put(id, post);
-            System.out.println(REPOSITORY);
         } else {
             REPOSITORY.replace(id, post);
         }
@@ -54,8 +54,8 @@ public class PostRepository {
 
     public void removeById(long id) {
         if (id <= 0 || id > POST_COUNTER.get() || !REPOSITORY.containsKey(id)) {
-            return;
+            throw new IllegalArgumentException();
         }
-        REPOSITORY.remove(id);
+        REPOSITORY.get(id).setRemoved(true);
     }
 }
